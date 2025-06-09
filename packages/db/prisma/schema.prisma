@@ -14,33 +14,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{ 
-  id       String         @id     @default(uuid())
-  email    String            
-  
+model User {
+  id              String      @id     @default(uuid())
+  email           String
 }
 
-model Website{
-  id       String         @id    @default(uuid())
-  url      String         
-  userId   String
-  
+model Website {
+  id        String      @id     @default(uuid())
+  url       String
+  userId    String
+  ticks     WebsiteTick[]
+  disabled  Boolean     @default(false)
 }
 
-model Validator{
-  id           String          @id   @default(uuid())
-  websiteId    String          
-  validatorId  String
-  createdAt    DateTime
-  status       WebsiteStatus
-  latency      Float
-  website      Website     @relation(fields:[websiteId],references:[id])
-  validator    Validator   @relation(fields:[websiteId],references:[id])
+model Validator {
+  id        String      @id     @default(uuid())
+  publicKey String
+  location  String
+  ip        String
+  pendingPayouts  Int         @default(0)
+  ticks     WebsiteTick[]
 }
 
-enum WebsiteStatus{
+model WebsiteTick {
+  id              String      @id     @default(uuid())
+  websiteId       String
+  validatorId     String
+  createdAt       DateTime
+  status          WebsiteStatus
+  latency         Float
+  website         Website    @relation(fields: [websiteId], references: [id])
+  validator       Validator    @relation(fields: [validatorId], references: [id])
+}
+
+enum WebsiteStatus {
   Good
   Bad
 }
-
-
